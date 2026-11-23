@@ -1,0 +1,7 @@
+{
+  "yolo26n_onnx_640": {
+    "pre_ms": 8.68,
+    "infer_ms": 126.24,
+    "post_ms": 0.22
+  }
+}

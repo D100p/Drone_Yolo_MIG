@@ -1,0 +1,6 @@
+# Exécution sur le Raspberry Pi (aarch64) — tout existe en wheel précompilée
+numpy
+opencv-python-headless   # headless = sans Qt ; remplace par opencv-python si tu utilises --show
+onnxruntime
+psutil                   # mesure de la RAM (plafond --max-ram-gb)
+# ncnn                   # décommente pour le backend NCNN (souvent plus rapide sur ARM)

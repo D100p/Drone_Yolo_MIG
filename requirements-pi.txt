@@ -1,0 +1,13 @@
+# Raspberry Pi avec caméra CSI (nappe plate) — à utiliser À LA PLACE de requirements.txt
+#
+# Picamera2, NumPy et OpenCV viennent d'apt (versions compilées ensemble par Raspberry Pi) :
+#   sudo apt install -y python3-picamera2 python3-opencv python3-numpy
+#   python3 -m venv --system-site-packages .venv     # le venv voit les paquets apt
+#   source .venv/bin/activate
+#   pip install -r requirements-pi.txt
+#
+# Ne PAS installer numpy / opencv-python avec pip ici : une autre version de NumPy dans
+# le venv masquerait celle d'apt et casserait Picamera2.
+onnxruntime
+psutil
+# ncnn                   # décommente pour le backend NCNN
