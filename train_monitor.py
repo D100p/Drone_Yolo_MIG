@@ -205,3 +205,4 @@ class TrainMonitor:
         # Rappel "à l'oeil" sur les exemples (indicatif : 6 images seulement)
         self.writer.add_scalar("exemples/personnes_trouvees_pct", 100 * total_found / max(total_gt, 1), epoch)
         self.writer.add_scalar("exemples/nb_predictions", total_pred, epoch)
+        

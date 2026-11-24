@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Interface légère pour tester en temps réel sur Mac, aux performances d'un Raspberry Pi 5.
 
 Fenêtre OpenCV avec :
@@ -25,6 +24,8 @@ import time
 from collections import deque
 from pathlib import Path
 
+import datetime
+
 import cv2
 import numpy as np
 
@@ -33,6 +34,8 @@ from yolo_pi.detector import Detector
 from yolo_pi.draw import draw_detections
 from yolo_pi.memory import MemoryGuard
 from yolo_pi.pi_emulation import PI_RAM_GB, PI_THREADS, PiEmulator, profile_key
+
+import filter
 
 WIN = "YOLO - temps reel  (m: modele | p: mode Pi | s: capture | q: quitter)"
 
@@ -114,6 +117,10 @@ def main():
             det.conf = cv2.getTrackbarPos("conf %", WIN) / 100.0
 
             dets, t = det(frame)
+
+            ## Prise en compte des personnes uniquement
+            dets = filter.filter(dets)
+
             key_name = profile_key(det)
             if pi_mode:
                 t = emulator.throttle(key_name, t)  # attend jusqu'au temps Pi de la frame
@@ -133,6 +140,7 @@ def main():
                 f"pre/post : {t.pre_ms:.1f} / {t.post_ms:.1f} ms",
                 f"conf >= {det.conf:.2f} | {len(dets)} objets",
                 f"RAM : {ram_mb:.0f} Mo / {args.max_ram_gb:.0f} Go",
+                f"{datetime.datetime.now().replace(microsecond=0)}",
             ])
             cv2.imshow(WIN, out)
 

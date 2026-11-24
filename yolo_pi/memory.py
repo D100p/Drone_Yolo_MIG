@@ -7,7 +7,7 @@ Le chien de garde tourne sur les deux systèmes, la limite noyau en plus sur Lin
 """
 
 import os
-import resource
+import psutil
 import sys
 
 

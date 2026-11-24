@@ -10,7 +10,6 @@ import numpy as np
 from .coco import COCO_CLASSES
 from .processing import Detection
 
-
 def _color(class_id: int) -> tuple[int, int, int]:
     # Couleur stable par classe (même classe -> même couleur d'une frame à l'autre)
     rng = np.random.default_rng(class_id)
@@ -28,7 +27,10 @@ def draw_detections(frame: np.ndarray, dets: list[Detection], fps: float | None 
         color = _color(d.class_id)
         p1, p2 = (int(d.x1), int(d.y1)), (int(d.x2), int(d.y2))
         cv2.rectangle(out, p1, p2, color, 2)
-        label = f"{_label(names, d.class_id)} {d.score:.2f}"
+
+        ## Affichage de la position ajouté
+        label = f"{_label(names, d.class_id)} {d.score:.2f} \n Position : {abs(d.x1 + d.x2)/2:.2f}, {abs(d.y1 + d.y2)/2:.2f}"
+
         (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
         y = max(p1[1], th + 4)
         cv2.rectangle(out, (p1[0], y - th - 4), (p1[0] + tw + 2, y), color, -1)
