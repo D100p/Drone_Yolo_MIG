@@ -1,0 +1,23 @@
+Planning :
+
+==== RPI ====
+- Wifi  -> se connecter en ssh au RPI
+	-> RPI a son wifi : git, pip (environnement virtuel ?)
+- GPS
+- Mails
+
+==== IA ====
+- Depuis le git d'ultralytics, récupérer YOLO26N version entraînable
+- Créer le dataset avec des humains
+- Data augmentation (rotations, occultations +/- importantes [avec texture de sol, débris, herbe... pour que le modèle ne triche pas], translations...)
+- Réentraîner le modèle avec ce dataset (Google Colab ?)
+- Le convertir en ONNX sur RPI
+- Traduire en binaire pour que l'augmentateur d'IA comprenne
+- Modèle de l'accélérateur : Hailo, … (modèle + avancé ?)
+
+==== CAO ====
+- Faire le support
+
+==== Rendu ====
+- Faire une documentation : readme, fichier pour installer…
+- Faire une vidéo de démo : prendre photos, vidéo impression, drone en vol...
