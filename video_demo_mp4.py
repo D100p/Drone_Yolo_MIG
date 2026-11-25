@@ -14,7 +14,7 @@ Par défaut le PC est bridé comme un Pi 5 8 Go : 4 threads, 8 Go de RAM max,
 et temps par frame égal à celui du Pi (voir yolo_pi/pi_emulation.py).
 
 Lancement :
-    python video_demo_mp4.py --video ma_video.mp4                          # émulation Pi 5 (temps estimés)
+    python video_demo_mp4.py --video video_test.mp4                          # émulation Pi 5 (temps estimés)
     python video_demo_mp4.py --video ma_video.mp4 --pi-profile pi_profile.json  # temps mesurés sur ton Pi
     python video_demo_mp4.py --video ma_video.mp4 --no-pi                 # pleine vitesse du PC
     python video_demo_mp4.py --video ma_video.mp4 --loop                   # boucle infinie
