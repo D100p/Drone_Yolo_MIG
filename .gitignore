@@ -3,4 +3,5 @@ __pycache__/
 vscode/
 image_victime
 .vscode/
-
+pi_profile.json
+video_test.mp4
