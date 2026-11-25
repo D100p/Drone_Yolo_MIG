@@ -36,6 +36,7 @@ from yolo_pi.memory import MemoryGuard
 from yolo_pi.pi_emulation import PI_RAM_GB, PI_THREADS, PiEmulator, profile_key
 
 import filter
+from scipy.ndimage import rotate
 
 WIN = "YOLO - temps reel  (m: modele | p: mode Pi | s: capture | q: quitter)"
 
@@ -43,7 +44,8 @@ WIN = "YOLO - temps reel  (m: modele | p: mode Pi | s: capture | q: quitter)"
 def parse_args():
     p = argparse.ArgumentParser(description="Démo temps réel YOLO avec fenêtre")
     p.add_argument("--models", nargs="+",
-                   default=["models/yolo26n_640.onnx", "models/yolo26n_320.onnx"],
+                   default=["models/yolo26n_640.onnx", 
+                            "models/yolo26n_320.onnx"],
                    help="un ou plusieurs modèles ; la touche m passe de l'un à l'autre")
     p.add_argument("--camera", default="auto",
                    help="auto (sur Mac = caméra 0, FaceTime / webcam), index caméra ou fichier vidéo")
@@ -112,14 +114,21 @@ def main():
     fid, n, fps = -1, 0, 0.0
     try:
         while True:
-            fid, frame = cam.read(fid)
-            det = detectors[idx]
-            det.conf = cv2.getTrackbarPos("conf %", WIN) / 100.0
+            fid, frame0 = cam.read(fid)
+            detectors_for_each_frame = []
+            for i in range(8):
+                frame = rotate(frame0, angle=45*i, reshape=True)
+                det = detectors[idx]
+                det.conf = cv2.getTrackbarPos("conf %", WIN) / 100.0
 
-            dets, t = det(frame)
+                dets, t = det(frame)
 
-            ## Prise en compte des personnes uniquement
-            dets = filter.filter(dets)
+                ## Prise en compte des personnes uniquement
+                dets = filter.filter(dets)
+                detectors_for_each_frame.append(dets)
+
+            print(detectors_for_each_frame)
+            frame = frame0
 
             key_name = profile_key(det)
             if pi_mode:
