@@ -188,7 +188,7 @@ def main():
             print(f"Attention : {emulator.too_slow_frames} frames ont été plus lentes que le Pi "
                   f"lui-même (machine hôte chargée ?) : l'émulation n'a pas pu les égaliser.")
         print(f"{n} frames, FPS final affiché : {fps:.1f}")
-
+        
 
 if __name__ == "__main__":
     main()
