@@ -16,8 +16,8 @@ def global_detection(detections_per_frame: list[list[Detection]]) -> list[Detect
 
     ## Création de la liste de détections finale
     if idx != 0:
-        rotation_matrix = np.array([[np.cos(np.pi*45*i/180), np.sin(np.pi*45*i/180)],
-                                    [-np.sin(np.pi*45*i/180), np.cos(np.pi*45*i/180)]])
+        rotation_matrix = np.array([[np.cos(np.pi*45*idx/180), np.sin(np.pi*45*idx/180)],
+                                    [-np.sin(np.pi*45*idx/180), np.cos(np.pi*45*idx/180)]])
         for detection in main_det:
             vec1 = np.dot(rotation_matrix, np.array([[detection.x1], [detection.y1]]))
             vec2 = np.dot(rotation_matrix, np.array([[detection.x2], [detection.y2]]))
