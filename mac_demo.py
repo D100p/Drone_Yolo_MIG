@@ -37,6 +37,7 @@ from yolo_pi.pi_emulation import PI_RAM_GB, PI_THREADS, PiEmulator, profile_key
 
 import filter
 from scipy.ndimage import rotate
+from enhance_detection import global_detection
 
 WIN = "YOLO - temps reel  (m: modele | p: mode Pi | s: capture | q: quitter)"
 
@@ -127,8 +128,8 @@ def main():
                 dets = filter.filter(dets)
                 detectors_for_each_frame.append(dets)
 
-            print(detectors_for_each_frame)
             frame = frame0
+            dets = global_detection(detectors_for_each_frame)
 
             key_name = profile_key(det)
             if pi_mode:
