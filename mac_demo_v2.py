@@ -167,6 +167,7 @@ def main():
 
             all_dets, t_total = enhance_detection_v2.detect_rotations(pool, det, frame0, mats, workers)
             dets = enhance_detection_v2.merge_detections(all_dets, mats, frame0.shape)
+            dets = enhance_detection_v2.intersection_over_unit(dets, seuil=0.25)
 
             key_name = profile_key(det)
             if pi_mode:

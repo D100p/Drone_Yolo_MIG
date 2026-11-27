@@ -6,6 +6,42 @@ from yolo_pi.processing import Detection
 
 import filter
 
+def intersection_over_unit(detections: list[Detection], seuil=0.65) -> list[Detection]:
+    """Calcule une matrice carrée de taille detections.len() dont les coefficients sont les scores iou
+    Filtre les détections en fonction du score iou : s'il dépasse un certain seuil pour deux images,
+    on n'en garde qu'une parmi les deux"""
+    boxes = np.array([
+        [det.x1, det.y1, det.x2, det.y2]
+        for det in detections
+    ], dtype=float)
+
+    if boxes.size != 0:
+        areas = (boxes[:, 2] - boxes[:, 0])*(boxes[:, 3] - boxes[:, 1])
+
+        x1 = np.maximum(boxes[:, None, 0], boxes[None, :, 0])
+        y1 = np.maximum(boxes[:, None, 1], boxes[None, :, 1])
+        x2 = np.minimum(boxes[:, None, 2], boxes[None, :, 2])
+        y2 = np.minimum(boxes[:, None, 3], boxes[None, :, 3])
+
+        intersection = np.maximum(0, x2 - x1)*np.maximum(0, y2 - y1)
+        union = areas[:, None] + areas[None, :] - intersection
+        iou_mat = np.divide(intersection, union, out=np.zeros_like(intersection), where=union > 0)
+        print("matrice iou = ", iou_mat, "\n")
+        new_detections = detections.copy()
+
+        for i in range(len(detections)):
+            for j in range(i+1, len(detections)):
+                if iou_mat[i, j] >= seuil:
+                    if (detections[i] in new_detections) and (detections[j] in new_detections):
+                        if detections[j].score > detections[i].score:
+                            new_detections.remove(detections[i])
+                        else:
+                            new_detections.remove(detections[j])
+        print(len(new_detections), "\n \n \n")
+        return new_detections
+    return []
+
+
 def build_rotations(shape: tuple, n_rotations: int) -> list:
     """Précalcule, pour chaque angle 360/n * i, la matrice M de cv2.warpAffine, la
     taille du canvas élargi (équivalent du reshape=True de scipy, image jamais rognée)
@@ -37,25 +73,23 @@ def merge_detections(detections_per_angle: list, mats: list, shape: tuple) -> li
     Les coins sont remis dans l'ordre (min/max) et recadrés sur l'image : les boîtes
     ne peuvent plus sortir du cadre ni avoir x1 > x2.
     """
-    best_dets, best_Minv = detections_per_angle[0], mats[0][2]
-    for dets, (_, _, Minv) in zip(detections_per_angle[1:], mats[1:]):
-        if len(dets) > len(best_dets):
-            best_dets, best_Minv = dets, Minv
-    if not best_dets:
-        return []
     h, w = shape[:2]
     out = []
-    for d in best_dets:
-        # (2, 3) @ (3, 2) -> (2, 2) : ligne = composante, colonne = coin ; on transpose
-        # pour avoir un point par ligne : corners = [(x1, y1), (x2, y2)]
-        corners = (best_Minv @ np.array([[d.x1, d.y1, 1.0], [d.x2, d.y2, 1.0]]).T).T
-        x1, y1 = corners[0]
-        x2, y2 = corners[1]
-        out.append(Detection(
-            float(np.clip(min(x1, x2), 0, w)), float(np.clip(min(y1, y2), 0, h)),
-            float(np.clip(max(x1, x2), 0, w)), float(np.clip(max(y1, y2), 0, h)),
-            d.score, d.class_id,
-        ))
+    for idx in range(len(detections_per_angle)):
+        for d in detections_per_angle[idx]:
+            _, _, Minv = mats[idx]
+            pts = np.array([[d.x1, d.y1, 1.0],
+                [d.x2, d.y1, 1.0],
+                [d.x2, d.y2, 1.0],
+                [d.x1, d.y2, 1.0]])
+            corners = (Minv @ pts.T).T[:, :2]
+            xs, ys = corners[:, 0], corners[:, 1]
+            x1n, y1n, x2n, y2n = xs.min(), ys.min(), xs.max(), ys.max()
+            out.append(Detection(
+                float(np.clip(x1n, 0, w)), float(np.clip(y1n, 0, h)),
+                float(np.clip(x2n, 0, w)), float(np.clip(y2n, 0, h)),
+                d.score, d.class_id,
+            ))
     return out
 
 
